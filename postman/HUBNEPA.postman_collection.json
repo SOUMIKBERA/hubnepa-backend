@@ -1,0 +1,312 @@
+{
+  "info": {
+    "name": "HubNepa Backend API — Complete 210 APIs",
+    "_postman_id": "hubnepa-2026-production",
+    "description": "Complete API collection for HubNepa platform. Set base_url variable to your server URL.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000/api/v1", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "refresh_token", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "🔐 Auth (9 APIs)",
+      "item": [
+        { "name": "Register", "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/auth/register", "body": { "mode": "raw", "raw": "{\"firstName\":\"John\",\"lastName\":\"Doe\",\"email\":\"john@example.com\",\"password\":\"Test@1234\",\"phone\":\"+1234567890\",\"role\":\"customer\"}" } } },
+        { "name": "Login", "event": [{"listen":"test","script":{"exec":["var r=pm.response.json();if(r.data&&r.data.accessToken){pm.collectionVariables.set('token',r.data.accessToken);pm.collectionVariables.set('refresh_token',r.data.refreshToken);}"],"type":"text/javascript"}}], "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/auth/login", "body": { "mode": "raw", "raw": "{\"email\":\"john@example.com\",\"password\":\"Test@1234\"}" } } },
+        { "name": "Get Me", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/auth/me" } },
+        { "name": "Refresh Token", "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/auth/refresh-token", "body": { "mode": "raw", "raw": "{\"refreshToken\":\"{{refresh_token}}\"}" } } },
+        { "name": "Forgot Password", "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/auth/forgot-password", "body": { "mode": "raw", "raw": "{\"email\":\"john@example.com\"}" } } },
+        { "name": "Reset Password", "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/auth/reset-password", "body": { "mode": "raw", "raw": "{\"token\":\"RESET_TOKEN_HERE\",\"password\":\"NewPass@1234\"}" } } },
+        { "name": "Change Password", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/auth/change-password", "body": { "mode": "raw", "raw": "{\"currentPassword\":\"Test@1234\",\"newPassword\":\"New@1234\"}" } } },
+        { "name": "Google Login", "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/auth/google", "body": { "mode": "raw", "raw": "{\"token\":\"GOOGLE_ID_TOKEN\"}" } } },
+        { "name": "Logout", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/auth/logout" } }
+      ]
+    },
+    {
+      "name": "👤 User Panel (12 APIs)",
+      "item": [
+        { "name": "Get Profile", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/users/profile" } },
+        { "name": "Update Profile", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/users/profile", "body": { "mode": "raw", "raw": "{\"firstName\":\"Jane\",\"lastName\":\"Doe\",\"phone\":\"+1987654321\"}" } } },
+        { "name": "Get Addresses", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/users/addresses" } },
+        { "name": "Add Address", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/users/addresses", "body": { "mode": "raw", "raw": "{\"label\":\"Home\",\"fullName\":\"John Doe\",\"phone\":\"+1234567890\",\"street\":\"123 Luxury Lane, Apt 4B\",\"city\":\"New York\",\"state\":\"NY\",\"zipCode\":\"10001\",\"country\":\"US\",\"isDefault\":true}" } } },
+        { "name": "Update Address", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/users/addresses/ADDRESS_ID", "body": { "mode": "raw", "raw": "{\"label\":\"Office\",\"street\":\"456 Work St\"}" } } },
+        { "name": "Delete Address", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/users/addresses/ADDRESS_ID" } },
+        { "name": "Set Default Address", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/users/addresses/ADDRESS_ID/default" } },
+        { "name": "Get Preferences", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/users/preferences" } },
+        { "name": "Update Preferences", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/users/preferences", "body": { "mode": "raw", "raw": "{\"language\":\"en\",\"currency\":\"USD\",\"darkMode\":false,\"orderUpdates\":true,\"promotions\":true}" } } },
+        { "name": "Enable 2FA", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/users/2fa/enable" } },
+        { "name": "Delete Account", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/users/account", "body": { "mode": "raw", "raw": "{\"password\":\"Test@1234\"}" } } },
+        { "name": "Apply Referral Code", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/referral/apply", "body": { "mode": "raw", "raw": "{\"referralCode\":\"JOHN-1234\"}" } } }
+      ]
+    },
+    {
+      "name": "🔔 Notifications (5 APIs)",
+      "item": [
+        { "name": "Get Notifications", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/notifications?page=1&limit=20" } },
+        { "name": "Mark One Read", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/notifications/NOTIF_ID/read" } },
+        { "name": "Mark All Read", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/notifications/read-all" } },
+        { "name": "Delete Notification", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/notifications/NOTIF_ID" } },
+        { "name": "Clear All Notifications", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/notifications/clear-all" } }
+      ]
+    },
+    {
+      "name": " Restaurants — Public (5 APIs)",
+      "item": [
+        { "name": "List Restaurants", "request": { "method": "GET", "url": "{{base_url}}/restaurants?page=1&limit=10&cuisine=Italian" } },
+        { "name": "Get Restaurant by ID", "request": { "method": "GET", "url": "{{base_url}}/restaurants/RESTAURANT_ID" } },
+        { "name": "Get Restaurant Menu", "request": { "method": "GET", "url": "{{base_url}}/restaurants/RESTAURANT_ID/menu" } },
+        { "name": "Search Restaurants", "request": { "method": "GET", "url": "{{base_url}}/restaurants/search?q=sushi&city=New York" } },
+        { "name": "Get Featured Restaurants", "request": { "method": "GET", "url": "{{base_url}}/restaurants/featured" } }
+      ]
+    },
+    {
+      "name": " Products — Public (6 APIs)",
+      "item": [
+        { "name": "List Products", "request": { "method": "GET", "url": "{{base_url}}/products?page=1&limit=12" } },
+        { "name": "Get Product by ID", "request": { "method": "GET", "url": "{{base_url}}/products/PRODUCT_ID" } },
+        { "name": "Search Products", "request": { "method": "GET", "url": "{{base_url}}/products/search?q=organic" } },
+        { "name": "Get Products by Category", "request": { "method": "GET", "url": "{{base_url}}/products?category=Dairy" } },
+        { "name": "Get Featured Products", "request": { "method": "GET", "url": "{{base_url}}/products/featured" } },
+        { "name": "Get New Arrivals", "request": { "method": "GET", "url": "{{base_url}}/products/new-arrivals" } }
+      ]
+    },
+    {
+      "name": " Cart (5 APIs)",
+      "item": [
+        { "name": "Get Cart", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/cart" } },
+        { "name": "Add to Cart", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/cart/add", "body": { "mode": "raw", "raw": "{\"itemType\":\"product\",\"itemId\":\"PRODUCT_ID\",\"quantity\":2}" } } },
+        { "name": "Update Cart Item", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/cart/ITEM_ID", "body": { "mode": "raw", "raw": "{\"quantity\":3}" } } },
+        { "name": "Remove Cart Item", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/cart/ITEM_ID" } },
+        { "name": "Clear Cart", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/cart/clear" } }
+      ]
+    },
+    {
+      "name": " Orders (7 APIs)",
+      "item": [
+        { "name": "Place Order", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/orders", "body": { "mode": "raw", "raw": "{\"orderType\":\"food\",\"deliveryAddressId\":\"ADDRESS_ID\",\"paymentMethod\":\"wallet\",\"tip\":2.50}" } } },
+        { "name": "Get My Orders", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/orders?page=1&limit=10" } },
+        { "name": "Get Order by ID", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/orders/ORDER_ID" } },
+        { "name": "Track Order", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/orders/ORDER_ID/track" } },
+        { "name": "Cancel Order", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/orders/ORDER_ID/cancel", "body": { "mode": "raw", "raw": "{\"reason\":\"Changed my mind\"}" } } },
+        { "name": "Reorder", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/orders/ORDER_ID/reorder" } },
+        { "name": "Request Refund", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/orders/ORDER_ID/refund", "body": { "mode": "raw", "raw": "{\"reason\":\"Wrong item delivered\",\"amount\":25.00}" } } }
+      ]
+    },
+    {
+      "name": "💰 Wallet (6 APIs)",
+      "item": [
+        { "name": "Get Wallet", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/wallet" } },
+        { "name": "Top Up Wallet", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/wallet/top-up", "body": { "mode": "raw", "raw": "{\"amount\":50.00,\"paymentMethod\":\"card\"}" } } },
+        { "name": "Withdraw Funds", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/wallet/withdraw", "body": { "mode": "raw", "raw": "{\"amount\":20.00}" } } },
+        { "name": "Get Transactions", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/wallet/transactions?page=1&limit=10" } },
+        { "name": "Apply Voucher", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/wallet/apply-voucher", "body": { "mode": "raw", "raw": "{\"code\":\"WELCOME50\"}" } } },
+        { "name": "Get Saved Cards", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/wallet/cards" } }
+      ]
+    },
+    {
+      "name": "❤️ Wishlist (3 APIs)",
+      "item": [
+        { "name": "Get Wishlist", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/wishlist" } },
+        { "name": "Add to Wishlist", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/wishlist/add", "body": { "mode": "raw", "raw": "{\"itemType\":\"product\",\"itemId\":\"PRODUCT_ID\"}" } } },
+        { "name": "Remove from Wishlist", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/wishlist/ITEM_ID" } }
+      ]
+    },
+    {
+      "name": " Reviews (6 APIs)",
+      "item": [
+        { "name": "Get Restaurant Reviews", "request": { "method": "GET", "url": "{{base_url}}/reviews/restaurant/RESTAURANT_ID" } },
+        { "name": "Get Product Reviews", "request": { "method": "GET", "url": "{{base_url}}/reviews/product/PRODUCT_ID" } },
+        { "name": "Create Review", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/reviews", "body": { "mode": "raw", "raw": "{\"targetType\":\"restaurant\",\"targetId\":\"RESTAURANT_ID\",\"rating\":5,\"comment\":\"Absolutely amazing food and fast delivery!\"}" } } },
+        { "name": "Reply to Review", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/reviews/REVIEW_ID/reply", "body": { "mode": "raw", "raw": "{\"message\":\"Thank you for your kind words!\"}" } } },
+        { "name": "Mark Review Helpful", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/reviews/REVIEW_ID/helpful" } },
+        { "name": "Delete Review", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/reviews/REVIEW_ID" } }
+      ]
+    },
+    {
+      "name": " Support (5 APIs)",
+      "item": [
+        { "name": "Create Ticket", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/support", "body": { "mode": "raw", "raw": "{\"subject\":\"Order not delivered\",\"category\":\"Order Issues\",\"priority\":\"High\",\"message\":\"My order #ORD-1234 was marked delivered but I never received it.\"}" } } },
+        { "name": "Get My Tickets", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/support?page=1&limit=10" } },
+        { "name": "Get Ticket by ID", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/support/TICKET_ID" } },
+        { "name": "Reply to Ticket", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/support/TICKET_ID/reply", "body": { "mode": "raw", "raw": "{\"message\":\"I have attached photos of the empty door step.\"}" } } },
+        { "name": "Rate Ticket", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/support/TICKET_ID/rate", "body": { "mode": "raw", "raw": "{\"rating\":5,\"comment\":\"Issue resolved quickly!\"}" } } }
+      ]
+    },
+    {
+      "name": " Restaurant Panel (42 APIs)",
+      "item": [
+        { "name": "Dashboard", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/dashboard" } },
+        { "name": "Get Orders", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/orders" } },
+        { "name": "Get Live Orders", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/orders/live" } },
+        { "name": "Get Order History", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/orders/history" } },
+        { "name": "Accept All Pending", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/orders/accept-all" } },
+        { "name": "Get Order by ID", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/orders/ORDER_ID" } },
+        { "name": "Update Order Status", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/orders/ORDER_ID/status", "body": { "mode": "raw", "raw": "{\"status\":\"confirmed\",\"note\":\"Starting preparation\"}" } } },
+        { "name": "Get Menu", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/menu" } },
+        { "name": "Add Menu Item", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/menu", "body": { "mode": "raw", "raw": "{\"name\":\"Truffle Wagyu Burger\",\"description\":\"A5 wagyu beef patty with black truffle\",\"price\":32.00,\"category\":\"Main Course\",\"isAvailable\":true,\"preparationTime\":15}" } } },
+        { "name": "Update Menu Item", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/menu/ITEM_ID", "body": { "mode": "raw", "raw": "{\"price\":35.00,\"isAvailable\":true}" } } },
+        { "name": "Delete Menu Item", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/menu/ITEM_ID" } },
+        { "name": "Toggle Item Availability", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/menu/ITEM_ID/availability", "body": { "mode": "raw", "raw": "{\"isAvailable\":false}" } } },
+        { "name": "Get Inventory", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/inventory" } },
+        { "name": "Add Inventory Item", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/inventory", "body": { "mode": "raw", "raw": "{\"itemName\":\"Truffle Oil\",\"itemType\":\"Solid\",\"unit\":\"ml\",\"currentStock\":500,\"minThreshold\":100,\"costPerUnit\":0.05}" } } },
+        { "name": "Adjust Inventory Stock", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/inventory/ITEM_ID/adjust", "body": { "mode": "raw", "raw": "{\"adjustmentType\":\"Add Stock\",\"quantity\":200,\"reason\":\"Weekly restock\"}" } } },
+        { "name": "Get Beverages", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/inventory/beverages" } },
+        { "name": "Add Beverage", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/inventory/beverages", "body": { "mode": "raw", "raw": "{\"beverageName\":\"Sparkling Water\",\"unit\":\"bottles\",\"currentStock\":50,\"minThreshold\":10}" } } },
+        { "name": "Adjust Beverage Stock", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/inventory/beverages/BEV_ID/adjust", "body": { "mode": "raw", "raw": "{\"adjustmentType\":\"Add Stock\",\"quantity\":24}" } } },
+        { "name": "Get Recipes", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/recipes" } },
+        { "name": "Create Recipe", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/recipes", "body": { "mode": "raw", "raw": "{\"recipeName\":\"Wagyu Burger\",\"category\":\"Main Course\",\"sellingPrice\":32.00,\"prepTimeMinutes\":15,\"chefHourlyRate\":25,\"ingredients\":[{\"name\":\"Wagyu Beef\",\"quantity\":200,\"unit\":\"g\",\"costPerUnit\":0.15,\"finalCost\":30}]}" } } },
+        { "name": "Get Expenses", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/expenses" } },
+        { "name": "Create Expense", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/expenses", "body": { "mode": "raw", "raw": "{\"category\":\"Utilities\",\"type\":\"Recurring\",\"amount\":350.00,\"description\":\"Monthly electricity bill\",\"date\":\"2026-04-01\"}" } } },
+        { "name": "Get Maintenance Issues", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/expenses/maintenance" } },
+        { "name": "Report Maintenance Issue", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/expenses/maintenance", "body": { "mode": "raw", "raw": "{\"issue\":\"Oven not heating properly\",\"priority\":\"High\",\"estimatedCost\":500}" } } },
+        { "name": "Get Payroll", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/expenses/payroll" } },
+        { "name": "Run Payroll", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/expenses/payroll/run", "body": { "mode": "raw", "raw": "{\"month\":\"April 2026\",\"hoursWorked\":80}" } } },
+        { "name": "Pay Payroll", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/expenses/payroll/PAYROLL_ID/pay" } },
+        { "name": "Get Staff", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/staff" } },
+        { "name": "Add Staff", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/staff", "body": { "mode": "raw", "raw": "{\"fullName\":\"Marco Rossi\",\"role\":\"Chef\",\"email\":\"marco@example.com\",\"phone\":\"+1234567890\",\"salary\":3500,\"shiftType\":\"Morning\"}" } } },
+        { "name": "Update Staff", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/staff/STAFF_ID", "body": { "mode": "raw", "raw": "{\"salary\":3800}" } } },
+        { "name": "Terminate Staff", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/staff/STAFF_ID", "body": { "mode": "raw", "raw": "{\"reason\":\"End of contract\"}" } } },
+        { "name": "Get Schedule", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/staff/schedule" } },
+        { "name": "Create Shift", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/staff/schedule", "body": { "mode": "raw", "raw": "{\"staff\":\"STAFF_ID\",\"date\":\"2026-04-25\",\"startTime\":\"09:00\",\"endTime\":\"17:00\",\"shiftType\":\"Morning\"}" } } },
+        { "name": "Get Staff Requests", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/staff/requests" } },
+        { "name": "Update Staff Request", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/staff/requests/REQ_ID", "body": { "mode": "raw", "raw": "{\"status\":\"Approved\"}" } } },
+        { "name": "Get Sales Closing", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/sales-closing" } },
+        { "name": "Submit Sales Entry", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/sales-closing", "body": { "mode": "raw", "raw": "{\"date\":\"2026-04-23\",\"cashSales\":1200,\"cardSales\":2800,\"onlineSales\":3500,\"expenses\":450,\"notes\":\"Busy Wednesday\"}" } } },
+        { "name": "Get Missing Sales Dates", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/sales-closing/missing" } },
+        { "name": "Get Reports", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/reports?days=30" } },
+        { "name": "Get Settings", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/restaurant-panel/settings" } },
+        { "name": "Update Settings", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/settings", "body": { "mode": "raw", "raw": "{\"isOpen\":true,\"deliveryFee\":2.99,\"minimumOrder\":20,\"deliveryTime\":\"30-45 min\"}" } } },
+        { "name": "Add Location", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/restaurant-panel/settings/locations", "body": { "mode": "raw", "raw": "{\"name\":\"Main Branch\",\"address\":\"123 Food St\",\"city\":\"New York\",\"phone\":\"+1234567890\",\"isPrimary\":true}" } } }
+      ]
+    },
+    {
+      "name": " Retailer Panel (25 APIs)",
+      "item": [
+        { "name": "Dashboard", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/retailer/dashboard" } },
+        { "name": "Get Products", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/retailer/products?page=1&limit=10" } },
+        { "name": "Add Product", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/retailer/products", "body": { "mode": "raw", "raw": "{\"name\":\"Organic Whole Milk\",\"sku\":\"DY-001\",\"category\":\"Dairy\",\"price\":5.99,\"stock\":45,\"description\":\"Fresh organic whole milk from grass-fed cows\",\"unit\":\"1L\"}" } } },
+        { "name": "Update Product", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/retailer/products/PRODUCT_ID", "body": { "mode": "raw", "raw": "{\"price\":6.49,\"stock\":60}" } } },
+        { "name": "Delete Product", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/retailer/products/PRODUCT_ID" } },
+        { "name": "Get Orders", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/retailer/orders" } },
+        { "name": "Update Order Status", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/retailer/orders/ORDER_ID/status", "body": { "mode": "raw", "raw": "{\"status\":\"Processing\"}" } } },
+        { "name": "Get Customers", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/retailer/customers" } },
+        { "name": "Get Reviews", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/retailer/reviews" } },
+        { "name": "Reply to Review", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/retailer/reviews/REVIEW_ID/reply", "body": { "mode": "raw", "raw": "{\"message\":\"Thank you for your feedback!\"}" } } },
+        { "name": "Get Offers", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/retailer/offers" } },
+        { "name": "Create Offer", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/retailer/offers", "body": { "mode": "raw", "raw": "{\"code\":\"SUMMER20\",\"discountType\":\"Percentage\",\"discountValue\":20,\"minimumPurchase\":30,\"validUntil\":\"2026-06-30\",\"usageLimit\":100}" } } },
+        { "name": "Update Offer", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/retailer/offers/OFFER_ID", "body": { "mode": "raw", "raw": "{\"usageLimit\":200}" } } },
+        { "name": "Delete Offer", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/retailer/offers/OFFER_ID" } },
+        { "name": "Get Finance", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/retailer/finance" } },
+        { "name": "Withdraw Funds", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/retailer/finance/withdraw", "body": { "mode": "raw", "raw": "{\"amount\":500.00}" } } },
+        { "name": "Get Refunds", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/retailer/refunds" } },
+        { "name": "Process Refund", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/retailer/refunds/REFUND_ID", "body": { "mode": "raw", "raw": "{\"action\":\"approve\"}" } } },
+        { "name": "Get Reports", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/retailer/reports?period=7" } },
+        { "name": "Get Support Tickets", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/retailer/support" } },
+        { "name": "Create Support Ticket", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/retailer/support", "body": { "mode": "raw", "raw": "{\"subject\":\"Commission fee clarification\",\"message\":\"Can you explain how commission is calculated?\"}" } } },
+        { "name": "Get Notifications", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/retailer/notifications" } },
+        { "name": "Mark Notification Read", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/retailer/notifications/NOTIF_ID/read" } },
+        { "name": "Get Settings", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/retailer/settings" } },
+        { "name": "Update Settings", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/retailer/settings", "body": { "mode": "raw", "raw": "{\"storeName\":\"Organic Greens Market\",\"description\":\"Fresh organic produce from local farmers\"}" } } }
+      ]
+    },
+    {
+      "name": "Supplier Panel (30 APIs)",
+      "item": [
+        { "name": "Dashboard", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/supplier/dashboard" } },
+        { "name": "Get Products", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/supplier/products" } },
+        { "name": "Create Product", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/products", "body": { "mode": "raw", "raw": "{\"productName\":\"Premium Wagyu Beef\",\"sku\":\"BEEF-WGY-001\",\"category\":\"Meat & Poultry\",\"basePrice\":45.00,\"unitType\":\"kg\",\"initialStock\":200,\"bulkTiers\":[{\"minQuantity\":10,\"unitPrice\":40.00},{\"minQuantity\":50,\"unitPrice\":35.00}]}" } } },
+        { "name": "Update Product", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/products/PROD_ID", "body": { "mode": "raw", "raw": "{\"basePrice\":42.00}" } } },
+        { "name": "Delete Product", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/supplier/products/PROD_ID" } },
+        { "name": "Get Orders", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/supplier/orders" } },
+        { "name": "Get Order by ID", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/supplier/orders/ORDER_ID" } },
+        { "name": "Update Order Status", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/orders/ORDER_ID/status", "body": { "mode": "raw", "raw": "{\"status\":\"Confirmed\"}" } } },
+        { "name": "Create Manifest", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/orders/manifest", "body": { "mode": "raw", "raw": "{\"orderIds\":[\"ORDER_ID_1\",\"ORDER_ID_2\"],\"vehicleType\":\"Refrigerated\",\"driver\":\"James Smith\"}" } } },
+        { "name": "Get Warehouse Zones", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/supplier/warehouse/zones" } },
+        { "name": "Create Zone", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/warehouse/zones", "body": { "mode": "raw", "raw": "{\"zoneName\":\"Cold Storage A\",\"type\":\"Cold Storage\",\"temperature\":\"2-4°C\",\"capacity\":500}" } } },
+        { "name": "Get Warehouse Items", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/supplier/warehouse/items" } },
+        { "name": "Adjust Stock", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/warehouse/adjust", "body": { "mode": "raw", "raw": "{\"productId\":\"PROD_ID\",\"adjustmentType\":\"Stock In\",\"quantity\":50,\"binLocation\":\"A-01-03\"}" } } },
+        { "name": "Get Clients", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/supplier/clients" } },
+        { "name": "Create Client", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/clients", "body": { "mode": "raw", "raw": "{\"clientName\":\"The Slate Room\",\"clientType\":\"Restaurant\",\"email\":\"orders@slateroom.com\",\"phone\":\"+1234567890\",\"city\":\"New York\"}" } } },
+        { "name": "Update Client", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/clients/CLIENT_ID", "body": { "mode": "raw", "raw": "{\"status\":\"Active\"}" } } },
+        { "name": "Broadcast to Clients", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/clients/broadcast", "body": { "mode": "raw", "raw": "{\"targetAudience\":\"All Clients\",\"subject\":\"New Price List April 2026\",\"message\":\"Please find our updated price list attached.\"}" } } },
+        { "name": "Get Shipments", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/supplier/logistics" } },
+        { "name": "Create Shipment", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/logistics", "body": { "mode": "raw", "raw": "{\"clientName\":\"The Slate Room\",\"vehicleType\":\"Refrigerated\",\"driver\":\"James Smith\",\"deliveryAddress\":\"123 Luxury Lane NY\",\"estimatedDelivery\":\"2026-04-25T10:00:00Z\"}" } } },
+        { "name": "Assign Driver", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/logistics/SHIPMENT_ID/assign-driver", "body": { "mode": "raw", "raw": "{\"driver\":\"James Smith\",\"vehicle\":\"Truck #4\"}" } } },
+        { "name": "Get Finance", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/supplier/finance" } },
+        { "name": "Get Invoices", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/supplier/finance/invoices" } },
+        { "name": "Create Invoice", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/finance/invoices", "body": { "mode": "raw", "raw": "{\"clientName\":\"The Slate Room\",\"lineItems\":[{\"description\":\"Wagyu Beef 10kg\",\"quantity\":10,\"price\":40.00,\"total\":400.00}],\"taxRate\":8,\"dueDate\":\"2026-05-01\"}" } } },
+        { "name": "Request Payout", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/finance/payout", "body": { "mode": "raw", "raw": "{\"amount\":2000.00}" } } },
+        { "name": "Get Reports", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/supplier/reports?days=30" } },
+        { "name": "Get Settings", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/supplier/settings" } },
+        { "name": "Update Settings", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/settings", "body": { "mode": "raw", "raw": "{\"firstName\":\"Mike\",\"phone\":\"+1234567890\"}" } } },
+        { "name": "Update Zone", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/warehouse/zones/ZONE_ID", "body": { "mode": "raw", "raw": "{\"utilization\":65}" } } },
+        { "name": "Get Product by ID", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/supplier/products/PROD_ID" } },
+        { "name": "Update Shipment", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/logistics/SHIPMENT_ID", "body": { "mode": "raw", "raw": "{\"status\":\"Delivered\"}" } } },
+        { "name": "Update Invoice", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/supplier/finance/invoices/INV_ID", "body": { "mode": "raw", "raw": "{\"status\":\"Paid\"}" } } }
+      ]
+    },
+    {
+      "name": " Delivery Panel (12 APIs)",
+      "item": [
+        { "name": "Get Profile", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/delivery/profile" } },
+        { "name": "Update Profile", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/delivery/profile", "body": { "mode": "raw", "raw": "{\"vehicleType\":\"bike\",\"vehicleNumber\":\"NYC-1234\",\"vehicleModel\":\"Yamaha FZ\"}" } } },
+        { "name": "Toggle Online Status", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/delivery/status", "body": { "mode": "raw", "raw": "{\"isOnline\":true,\"location\":{\"lat\":40.7128,\"lng\":-74.0060,\"address\":\"New York, NY\"}}" } } },
+        { "name": "Update Location", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/delivery/location", "body": { "mode": "raw", "raw": "{\"lat\":40.7128,\"lng\":-74.0060,\"address\":\"Times Square, NY\"}" } } },
+        { "name": "Get Available Orders", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/delivery/available-orders" } },
+        { "name": "Accept Order", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/delivery/orders/ORDER_ID/accept" } },
+        { "name": "Decline Order", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/delivery/orders/ORDER_ID/decline" } },
+        { "name": "Update Order Status", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/delivery/orders/ORDER_ID/status", "body": { "mode": "raw", "raw": "{\"status\":\"delivered\"}" } } },
+        { "name": "Get My Deliveries", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/delivery/my-deliveries?active=true" } },
+        { "name": "Get Earnings", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/delivery/earnings" } },
+        { "name": "Request Payout", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/delivery/earnings/payout", "body": { "mode": "raw", "raw": "{\"amount\":100.00}" } } },
+        { "name": "Get Delivery History", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/delivery/history" } }
+      ]
+    },
+    {
+      "name": "Admin Panel (32 APIs)",
+      "item": [
+        { "name": "Dashboard", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/dashboard" } },
+        { "name": "Get All Users", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/users?page=1&limit=20" } },
+        { "name": "Get User by ID", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/users/USER_ID" } },
+        { "name": "Update User", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/admin/users/USER_ID", "body": { "mode": "raw", "raw": "{\"isActive\":true,\"membershipTier\":\"Platinum\"}" } } },
+        { "name": "Block User", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/admin/users/USER_ID/block", "body": { "mode": "raw", "raw": "{\"blocked\":true,\"reason\":\"Fraud detected\"}" } } },
+        { "name": "Change User Role", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/admin/users/USER_ID/role", "body": { "mode": "raw", "raw": "{\"role\":\"retailer\"}" } } },
+        { "name": "Get Restaurants", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/partners/restaurants?status=pending" } },
+        { "name": "Approve Restaurant", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/partners/restaurants/RESTAURANT_ID/approve" } },
+        { "name": "Reject Restaurant", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/admin/partners/restaurants/RESTAURANT_ID/reject", "body": { "mode": "raw", "raw": "{\"reason\":\"Incomplete documentation submitted.\"}" } } },
+        { "name": "Suspend Restaurant", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/admin/partners/restaurants/RESTAURANT_ID/suspend", "body": { "mode": "raw", "raw": "{\"reason\":\"Policy violation\"}" } } },
+        { "name": "Get All Products", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/products?status=pending" } },
+        { "name": "Approve Product", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/products/PRODUCT_ID/approve" } },
+        { "name": "Reject Product", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/admin/products/PRODUCT_ID/reject", "body": { "mode": "raw", "raw": "{\"reason\":\"Poor quality images\"}" } } },
+        { "name": "Get All Orders", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/orders?page=1&limit=20" } },
+        { "name": "Get Complaints", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/complaints?status=Open" } },
+        { "name": "Update Complaint", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/admin/complaints/COMPLAINT_ID", "body": { "mode": "raw", "raw": "{\"status\":\"Resolved\",\"resolutionNote\":\"Refund issued to customer.\"}" } } },
+        { "name": "Get Finance Overview", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/finance" } },
+        { "name": "Get Refunds", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/finance/refunds" } },
+        { "name": "Process Refund", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/admin/finance/refunds/ORDER_ID", "body": { "mode": "raw", "raw": "{\"action\":\"approve\"}" } } },
+        { "name": "Get Analytics", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/analytics?days=30" } },
+        { "name": "Get Campaigns", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/marketing/campaigns" } },
+        { "name": "Create Campaign", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/admin/marketing/campaigns", "body": { "mode": "raw", "raw": "{\"name\":\"Spring Sale 2026\",\"type\":\"Banner\",\"targetAudience\":\"All Users\",\"startDate\":\"2026-04-25\",\"endDate\":\"2026-05-10\",\"description\":\"Spring season promotion\"}" } } },
+        { "name": "Send Push Notification", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/admin/marketing/notifications/send", "body": { "mode": "raw", "raw": "{\"targetAudience\":\"All Users\",\"title\":\"Weekend Special!\",\"message\":\"Get 20% off all orders this weekend. Use code WEEKEND20.\"}" } } },
+        { "name": "Get Vouchers", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/vouchers" } },
+        { "name": "Create Voucher", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/admin/vouchers", "body": { "mode": "raw", "raw": "{\"code\":\"WELCOME50\",\"discountType\":\"percentage\",\"discountValue\":50,\"minimumOrderAmount\":30,\"maxUses\":1000,\"expiryDate\":\"2026-12-31\"}" } } },
+        { "name": "Get Roles", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/access-control/roles" } },
+        { "name": "Create Role", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/admin/access-control/roles", "body": { "mode": "raw", "raw": "{\"name\":\"Support Agent\",\"description\":\"Handles customer support tickets\"}" } } },
+        { "name": "Get Admin Users", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/access-control/users" } },
+        { "name": "Get Audit Logs", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/access-control/logs?page=1&limit=20" } },
+        { "name": "Get Platform Settings", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/admin/settings" } },
+        { "name": "Update Platform Settings", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/admin/settings", "body": { "mode": "raw", "raw": "{\"platformName\":\"HubNepa\",\"supportEmail\":\"support@hubnepa.com\",\"commissionRate\":10}" } } },
+        { "name": "Set Maintenance Mode", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{base_url}}/admin/settings/maintenance", "body": { "mode": "raw", "raw": "{\"enabled\":false}" } } }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "item": [
+        { "name": "Health Check", "request": { "method": "GET", "url": "{{base_url}}/health" } }
+      ]
+    }
+  ]
+}
