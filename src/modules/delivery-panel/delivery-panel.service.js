@@ -125,12 +125,12 @@ const getEarnings = async (driverId, query) => {
   const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
 
   const [todayStats, weekStats, monthStats, recentEarnings, weeklyBreakdown] = await Promise.all([
-    Order.aggregate([{ $match: { deliveryPartner: mongoose.Types.ObjectId(driverId), status: 'delivered', deliveredAt: { $gte: today } } }, { $group: { _id: null, count: { $sum: 1 }, total: { $sum: '$deliveryFee' } } }]),
-    Order.aggregate([{ $match: { deliveryPartner: mongoose.Types.ObjectId(driverId), status: 'delivered', deliveredAt: { $gte: weekStart } } }, { $group: { _id: null, count: { $sum: 1 }, total: { $sum: '$deliveryFee' } } }]),
-    Order.aggregate([{ $match: { deliveryPartner: mongoose.Types.ObjectId(driverId), status: 'delivered', deliveredAt: { $gte: monthStart } } }, { $group: { _id: null, count: { $sum: 1 }, total: { $sum: '$deliveryFee' } } }]),
+    Order.aggregate([{ $match: { deliveryPartner: new mongoose.Types.ObjectId(driverId), status: 'delivered', deliveredAt: { $gte: today } } }, { $group: { _id: null, count: { $sum: 1 }, total: { $sum: '$deliveryFee' } } }]),
+    Order.aggregate([{ $match: { deliveryPartner: new mongoose.Types.ObjectId(driverId), status: 'delivered', deliveredAt: { $gte: weekStart } } }, { $group: { _id: null, count: { $sum: 1 }, total: { $sum: '$deliveryFee' } } }]),
+    Order.aggregate([{ $match: { deliveryPartner: new mongoose.Types.ObjectId(driverId), status: 'delivered', deliveredAt: { $gte: monthStart } } }, { $group: { _id: null, count: { $sum: 1 }, total: { $sum: '$deliveryFee' } } }]),
     EarningsLog.find({ driver: driverId }).sort({ createdAt: -1 }).limit(20).populate('order', 'orderId'),
     EarningsLog.aggregate([
-      { $match: { driver: mongoose.Types.ObjectId(driverId), createdAt: { $gte: weekStart } } },
+      { $match: { driver: new mongoose.Types.ObjectId(driverId), createdAt: { $gte: weekStart } } },
       { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, total: { $sum: '$amount' }, count: { $sum: 1 } } },
       { $sort: { '_id': 1 } },
     ]),

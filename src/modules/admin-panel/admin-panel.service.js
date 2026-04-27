@@ -9,14 +9,14 @@ const paginate = require('../../utils/paginate');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 
-// ─── Audit ────
+// ─── Audit ────────────────────────────────────────────────────────────────────
 const log = async (userId, action, resource, id, details, req) => {
   try {
     await AuditLog.create({ performedBy: userId, action, targetResource: resource, targetId: id, details, ipAddress: req?.ip, userAgent: req?.headers?.['user-agent'] });
   } catch (_) {}
 };
 
-// ─── Dashboard ─────
+// ─── Dashboard ────────────────────────────────────────────────────────────────
 const getDashboard = async (adminId, req) => {
   const today = new Date(); today.setHours(0,0,0,0);
   const [totalUsers, totalRestaurants, totalOrders, totalRevenue, pendingRestaurants, pendingProducts, todayOrders, recentOrders, usersByRole] = await Promise.all([
@@ -34,7 +34,7 @@ const getDashboard = async (adminId, req) => {
   return { totalUsers, totalRestaurants, totalOrders, totalRevenue: totalRevenue[0]?.total || 0, pendingRestaurants, pendingProducts, todayOrders, recentOrders, usersByRole };
 };
 
-// ─── Users ─────
+// ─── Users ────────────────────────────────────────────────────────────────────
 const getUsers = async (query) => {
   const filter = {};
   if (query.role) filter.role = query.role;
@@ -47,7 +47,7 @@ const getUserById = async (userId) => {
   const user = await User.findById(userId).select('-password -refreshToken');
   if (!user) { const e = new Error('User not found.'); e.statusCode = 404; throw e; }
   const [orderStats, paymentHistory] = await Promise.all([
-    Order.aggregate([{ $match: { customer: mongoose.Types.ObjectId(userId) } }, { $group: { _id: '$status', count: { $sum: 1 }, total: { $sum: '$total' } } }]),
+    Order.aggregate([{ $match: { customer: new mongoose.Types.ObjectId(userId) } }, { $group: { _id: '$status', count: { $sum: 1 }, total: { $sum: '$total' } } }]),
     Order.find({ customer: userId }).select('orderId total paymentStatus paymentMethod createdAt').sort({ createdAt: -1 }).limit(10),
   ]);
   return { user, orderStats, paymentHistory };
@@ -78,7 +78,7 @@ const deleteUser = async (adminId, userId, reason, req) => {
   await log(adminId, 'Deleted User', 'User', userId, reason, req);
 };
 
-// ─── Partners ─────
+// ─── Partners ─────────────────────────────────────────────────────────────────
 const getRestaurants = async (query) => {
   const filter = {};
   if (query.status) filter.status = query.status;
@@ -110,7 +110,7 @@ const createPartner = async (adminId, data, req) => {
   return user;
 };
 
-// ─── Products ─────
+// ─── Products ─────────────────────────────────────────────────────────────────
 const getProducts = async (query) => {
   const filter = {};
   if (query.status) filter.status = query.status;
@@ -132,7 +132,7 @@ const rejectProduct = async (adminId, productId, reason, req) => {
   return p;
 };
 
-// ─── Orders ──────
+// ─── Orders ───────────────────────────────────────────────────────────────────
 const getAllOrders = async (query) => {
   const filter = {};
   if (query.status) filter.status = query.status;
@@ -141,7 +141,7 @@ const getAllOrders = async (query) => {
   return paginate(Order, filter, { page: query.page, limit: query.limit, sort: { createdAt: -1 }, populate: [{ path: 'customer', select: 'firstName lastName email' }, { path: 'restaurant', select: 'name' }] });
 };
 
-// ─── Complaints ──────
+// ─── Complaints ───────────────────────────────────────────────────────────────
 const getComplaints = async (query) => {
   const filter = {};
   if (query.status) filter.status = query.status;
@@ -158,7 +158,7 @@ const updateComplaint = async (adminId, complaintId, data, req) => {
   return c;
 };
 
-// ─── Finance ────
+// ─── Finance ──────────────────────────────────────────────────────────────────
 const getFinance = async () => {
   const [totalRevenue, pendingSettlements, commissions, weeklyRevenue] = await Promise.all([
     Order.aggregate([{ $match: { status: 'delivered' } }, { $group: { _id: null, total: { $sum: '$total' } } }]),
@@ -189,7 +189,7 @@ const processRefund = async (adminId, orderId, action, req) => {
   return order;
 };
 
-// ─── Analytics ──────
+// ─── Analytics ────────────────────────────────────────────────────────────────
 const getAnalytics = async (query) => {
   const days = parseInt(query.days) || 30;
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
@@ -202,7 +202,7 @@ const getAnalytics = async (query) => {
   return { revenueGrowth, salesByCategory, newUsers, topRestaurants, metrics: { cac: 12.50, aov: 45.00, retentionRate: 85 } };
 };
 
-// ─── Marketing ────
+// ─── Marketing ────────────────────────────────────────────────────────────────
 const getCampaigns = async (query) => {
   const filter = {};
   if (query.status) filter.status = query.status;
@@ -239,13 +239,13 @@ const sendPushNotification = async (adminId, data, req) => {
   return { count: users.length };
 };
 
-// ─── Vouchers ─────
+// ─── Vouchers ─────────────────────────────────────────────────────────────────
 const getVouchers = async (query) => paginate(Voucher, {}, { page: query.page, limit: query.limit });
 const createVoucher = async (adminId, data, req) => { const v = await Voucher.create({ ...data, createdBy: adminId }); await log(adminId, 'Created Voucher', 'Voucher', v._id, v.code, req); return v; };
 const updateVoucher = async (adminId, vid, data, req) => { const v = await Voucher.findByIdAndUpdate(vid, data, { new: true }); await log(adminId, 'Updated Voucher', 'Voucher', vid, null, req); return v; };
 const deleteVoucher = async (adminId, vid, req) => { await Voucher.findByIdAndDelete(vid); await log(adminId, 'Deleted Voucher', 'Voucher', vid, null, req); };
 
-// ─── SEO ─────
+// ─── SEO ─────────────────────────────────────────────────────────────────────
 const getSEO = async () => {
   const settings = await PlatformSetting.find({ category: 'seo' });
   return settings.reduce((acc, s) => { acc[s.key] = s.value; return acc; }, {});
@@ -257,7 +257,7 @@ const updateSEO = async (adminId, data, req) => {
   await log(adminId, 'Updated SEO Settings', 'PlatformSetting', null, null, req);
 };
 
-// ─── Access Control ────
+// ─── Access Control ───────────────────────────────────────────────────────────
 const getRoles = async () => {
   const [roles, admins] = await Promise.all([AdminRole.find().populate('createdBy', 'firstName lastName'), AdminUser.find().populate('user', 'firstName lastName email').populate('role', 'name')]);
   return { roles, admins };
@@ -284,7 +284,7 @@ const getAuditLogs = async (query) => {
   return paginate(AuditLog, filter, { page: query.page, limit: query.limit, sort: { createdAt: -1 }, populate: { path: 'performedBy', select: 'firstName lastName email' } });
 };
 
-// ─── Platform Settings ─────
+// ─── Platform Settings ────────────────────────────────────────────────────────
 const getSettings = async () => {
   const settings = await PlatformSetting.find();
   return settings.reduce((acc, s) => { if (!acc[s.category]) acc[s.category] = {}; acc[s.category][s.key] = s.value; return acc; }, {});
@@ -299,7 +299,7 @@ const getLegalDoc = async (type) => { const s = await PlatformSetting.findOne({ 
 const updateLegalDoc = async (adminId, type, content, req) => { await PlatformSetting.findOneAndUpdate({ key: type }, { key: type, value: content, category: 'legal', updatedBy: adminId }, { upsert: true }); await log(adminId, `Updated ${type}`, 'Legal', null, null, req); };
 const setMaintenanceMode = async (adminId, enabled, req) => { await PlatformSetting.findOneAndUpdate({ key: 'maintenanceMode' }, { key: 'maintenanceMode', value: enabled, category: 'system', updatedBy: adminId }, { upsert: true }); await log(adminId, `Maintenance Mode ${enabled ? 'Enabled' : 'Disabled'}`, 'PlatformSetting', null, null, req); };
 
-// ─── Reports ────
+// ─── Reports ─────────────────────────────────────────────────────────────────
 const getReports = async (query) => {
   const days = parseInt(query.days) || 30;
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);

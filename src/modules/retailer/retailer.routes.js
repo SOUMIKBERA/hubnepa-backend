@@ -17,7 +17,7 @@ router.use(protect, authorize('retailer'));
 // DASHBOARD
 router.get('/dashboard', async (req, res, next) => {
   try {
-    const rid = mongoose.Types.ObjectId(req.user._id);
+    const rid = new mongoose.Types.ObjectId(req.user._id);
     const lastMonthStart = new Date(); lastMonthStart.setMonth(lastMonthStart.getMonth() - 1); lastMonthStart.setDate(1); lastMonthStart.setHours(0,0,0,0);
     const lastMonthEnd = new Date(); lastMonthEnd.setDate(0); lastMonthEnd.setHours(23,59,59,999);
     const [totalRevenue, lastMonthRevenue, totalOrders, totalProducts, pendingPayments, recentOrders, weeklySales, dailyOrders] = await Promise.all([
@@ -102,7 +102,7 @@ router.put('/orders/:id/status', async (req, res, next) => {
 // CUSTOMERS
 router.get('/customers', async (req, res, next) => {
   try {
-    const rid = mongoose.Types.ObjectId(req.user._id);
+    const rid = new mongoose.Types.ObjectId(req.user._id);
     const page = parseInt(req.query.page)||1; const limit = parseInt(req.query.limit)||10;
     const customers = await Order.aggregate([
       { $match: { retailer: rid } },
@@ -147,7 +147,7 @@ router.delete('/offers/:id', async (req, res, next) => {
 // FINANCE
 router.get('/finance', async (req, res, next) => {
   try {
-    const rid = mongoose.Types.ObjectId(req.user._id);
+    const rid = new mongoose.Types.ObjectId(req.user._id);
     const [available, pending, transactions] = await Promise.all([
       Order.aggregate([{ $match: { retailer: rid, status: 'delivered', paymentStatus: 'paid' } }, { $group: { _id: null, total: { $sum: '$total' } } }]),
       Order.aggregate([{ $match: { retailer: rid, status: { $in: ['pending','confirmed','in_transit'] }, paymentStatus: 'paid' } }, { $group: { _id: null, total: { $sum: '$total' } } }]),
@@ -190,7 +190,7 @@ router.put('/refunds/:orderId', async (req, res, next) => {
 // REPORTS
 router.get('/reports', async (req, res, next) => {
   try {
-    const rid = mongoose.Types.ObjectId(req.user._id);
+    const rid = new mongoose.Types.ObjectId(req.user._id);
     const days = parseInt(req.query.days)||7;
     const since = new Date(Date.now() - days*24*60*60*1000);
     const [dailyRevenue, categoryBreakdown, topProducts, orderStats] = await Promise.all([

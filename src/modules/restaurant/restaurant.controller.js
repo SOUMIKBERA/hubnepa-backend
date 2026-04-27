@@ -4,7 +4,7 @@ const { successResponse } = require('../../utils/apiResponse');
 const createRestaurant = async (req, res, next) => {
   try {
     const restaurant = await restaurantService.createRestaurant(req.user._id, req.body);
-    return successResponse(res, 201, 'Restaurant created. Awaiting admin approval.', { restaurant });
+    return successResponse(res, 201, 'Restaurant created successfully.', { restaurant });
   } catch (error) { next(error); }
 };
 

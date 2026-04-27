@@ -9,17 +9,17 @@ const {
 } = require('./restaurant-panel.model');
 const paginate = require('../../utils/paginate');
 
-// ─── Helpers ──────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 const getRestaurant = async (ownerId) => {
   const r = await Restaurant.findOne({ owner: ownerId });
   if (!r) { const e = new Error('Restaurant not found. Please complete your profile first.'); e.statusCode = 404; throw e; }
   return r;
 };
 
-// ─── Dashboard ──────
+// ─── Dashboard ────────────────────────────────────────────────────────────────
 const getDashboard = async (ownerId) => {
   const restaurant = await getRestaurant(ownerId);
-  const rid = mongoose.Types.ObjectId(restaurant._id);
+  const rid = new mongoose.Types.ObjectId(restaurant._id);
   const today = new Date(); today.setHours(0,0,0,0);
   const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
 
@@ -41,7 +41,7 @@ const getDashboard = async (ownerId) => {
   };
 };
 
-// ─── Orders ──────
+// ─── Orders ───────────────────────────────────────────────────────────────────
 const getOrders = async (ownerId, query) => {
   const restaurant = await getRestaurant(ownerId);
   const filter = { restaurant: restaurant._id };
@@ -83,7 +83,7 @@ const getOrderHistory = async (ownerId, query) => {
   return paginate(Order, filter, { page: query.page, limit: query.limit, sort: { createdAt: -1 }, populate: { path: 'customer', select: 'firstName lastName' } });
 };
 
-// ─── Menu ──────
+// ─── Menu ─────────────────────────────────────────────────────────────────────
 const getMenu = async (ownerId, query) => {
   const restaurant = await getRestaurant(ownerId);
   let menu = restaurant.menu;
@@ -126,7 +126,7 @@ const toggleAvailability = async (ownerId, itemId, isAvailable) => {
   return item;
 };
 
-// ─── Inventory ─────
+// ─── Inventory ────────────────────────────────────────────────────────────────
 const getInventory = async (ownerId, query) => {
   const restaurant = await getRestaurant(ownerId);
   const filter = { restaurant: restaurant._id };
@@ -221,7 +221,7 @@ const deleteRecipe = async (ownerId, recipeId) => {
   await Recipe.findOneAndDelete({ _id: recipeId, restaurant: restaurant._id });
 };
 
-// ─── Expenses ────
+// ─── Expenses ─────────────────────────────────────────────────────────────────
 const getExpenses = async (ownerId, query) => {
   const restaurant = await getRestaurant(ownerId);
   const filter = { restaurant: restaurant._id };
@@ -290,7 +290,7 @@ const updatePayroll = async (ownerId, payrollId, data) => {
   return Payroll.findOneAndUpdate({ _id: payrollId, restaurant: restaurant._id }, data, { new: true });
 };
 
-// ─── Staff ──────
+// ─── Staff ────────────────────────────────────────────────────────────────────
 const getStaff = async (ownerId, query) => {
   const restaurant = await getRestaurant(ownerId);
   const filter = { restaurant: restaurant._id };
@@ -358,7 +358,7 @@ const getStaffRequests = async (ownerId, query) => {
 
 const updateStaffRequest = async (requestId, status) => StaffRequest.findByIdAndUpdate(requestId, { status }, { new: true });
 
-// ─── Sales Closing ───
+// ─── Sales Closing ────────────────────────────────────────────────────────────
 const getSalesClosing = async (ownerId, query) => {
   const restaurant = await getRestaurant(ownerId);
   const filter = { restaurant: restaurant._id };
@@ -383,10 +383,10 @@ const getMissingSalesDates = async (ownerId) => {
   return last7.filter(d => !existingDates.includes(d.toDateString()));
 };
 
-// ─── Reports ─────
+// ─── Reports ──────────────────────────────────────────────────────────────────
 const getReports = async (ownerId, query) => {
   const restaurant = await getRestaurant(ownerId);
-  const rid = mongoose.Types.ObjectId(restaurant._id);
+  const rid = new mongoose.Types.ObjectId(restaurant._id);
   const days = parseInt(query.days) || 30;
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
@@ -401,7 +401,7 @@ const getReports = async (ownerId, query) => {
   return { dailyRevenue, popularItems, salesMix, peakHours, expenseBreakdown, salesTrend };
 };
 
-// ─── Settings ──────
+// ─── Settings ─────────────────────────────────────────────────────────────────
 const getSettings = async (ownerId) => {
   const [restaurant, locations] = await Promise.all([getRestaurant(ownerId), RestaurantLocation.find({ restaurant: (await getRestaurant(ownerId))._id })]);
   return { restaurant, locations };

@@ -4,9 +4,9 @@ const User = require('../auth/auth.model');
 const paginate = require('../../utils/paginate');
 const mongoose = require('mongoose');
 
-// ─── Dashboard ─────
+// ─── Dashboard ────────────────────────────────────────────────────────────────
 const getDashboard = async (supplierId) => {
-  const sid = mongoose.Types.ObjectId(supplierId);
+  const sid = new mongoose.Types.ObjectId(supplierId);
   const [totalRevenue, activeOrders, lowStock, activeClients, recentOrders, lowStockItems] = await Promise.all([
     WholesaleOrder.aggregate([{ $match: { supplier: sid, status: 'Delivered' } }, { $group: { _id: null, total: { $sum: '$totalAmount' } } }]),
     WholesaleOrder.countDocuments({ supplier: supplierId, status: { $in: ['Pending', 'Confirmed', 'Processing', 'Shipped'] } }),
@@ -18,7 +18,7 @@ const getDashboard = async (supplierId) => {
   return { totalRevenue: totalRevenue[0]?.total || 0, activeOrders, lowStock, activeClients, recentOrders, lowStockItems };
 };
 
-// ─── Products ─────
+// ─── Products ─────────────────────────────────────────────────────────────────
 const getProducts = async (supplierId, query) => {
   const filter = { supplier: supplierId };
   if (query.category) filter.category = query.category;
@@ -41,7 +41,7 @@ const deleteProduct = async (supplierId, productId) => {
   await SupplierProduct.findOneAndDelete({ _id: productId, supplier: supplierId });
 };
 
-// ─── Orders ─────
+// ─── Orders ───────────────────────────────────────────────────────────────────
 const getOrders = async (supplierId, query) => {
   const filter = { supplier: supplierId };
   if (query.status) filter.status = query.status;
@@ -63,7 +63,7 @@ const createManifest = async (supplierId, orderIds, shipmentData) => {
   return shipments;
 };
 
-// ─── Warehouse ──────
+// ─── Warehouse ────────────────────────────────────────────────────────────────
 const getWarehouseZones = async (supplierId) => {
   return WarehouseZone.find({ supplier: supplierId });
 };
@@ -97,7 +97,7 @@ const adjustStock = async (supplierId, data) => {
   return item;
 };
 
-// ─── Clients ───────
+// ─── Clients ──────────────────────────────────────────────────────────────────
 const getClients = async (supplierId, query) => {
   const filter = { supplier: supplierId };
   if (query.type) filter.clientType = query.type;
@@ -123,7 +123,7 @@ const broadcastToClients = async (supplierId, targetAudience, subject, message) 
   return { recipientCount: clients.length };
 };
 
-// ─── Logistics ─────
+// ─── Logistics ────────────────────────────────────────────────────────────────
 const getShipments = async (supplierId, query) => {
   const filter = { supplier: supplierId };
   if (query.status) filter.status = query.status;
@@ -141,9 +141,9 @@ const updateShipment = async (supplierId, shipmentId, data) => {
   return s;
 };
 
-// ─── Finance ─────
+// ─── Finance ──────────────────────────────────────────────────────────────────
 const getFinanceOverview = async (supplierId) => {
-  const sid = mongoose.Types.ObjectId(supplierId);
+  const sid = new mongoose.Types.ObjectId(supplierId);
   const [totalRevenue, pendingPayments, paidThisMonth, invoices, transactions] = await Promise.all([
     WholesaleOrder.aggregate([{ $match: { supplier: sid, paymentStatus: { $in: ['Paid', 'Net 30'] } } }, { $group: { _id: null, total: { $sum: '$totalAmount' } } }]),
     WholesaleOrder.aggregate([{ $match: { supplier: sid, paymentStatus: 'Unpaid' } }, { $group: { _id: null, total: { $sum: '$totalAmount' } } }]),
@@ -170,9 +170,9 @@ const requestPayout = async (supplierId, amount) => {
   return { amount, status: 'Processing', estimatedDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000) };
 };
 
-// ─── Reports ──────
+// ─── Reports ──────────────────────────────────────────────────────────────────
 const getReports = async (supplierId, query) => {
-  const sid = mongoose.Types.ObjectId(supplierId);
+  const sid = new mongoose.Types.ObjectId(supplierId);
   const days = parseInt(query.days) || 30;
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
@@ -186,7 +186,7 @@ const getReports = async (supplierId, query) => {
   return { revenueByDay, topProducts, topClients, categoryBreakdown, orderStats };
 };
 
-// ─── Settings ─────
+// ─── Settings ─────────────────────────────────────────────────────────────────
 const getSettings = async (supplierId) => {
   const user = await User.findById(supplierId).select('-password -refreshToken');
   return { user };
