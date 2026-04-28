@@ -140,7 +140,12 @@ const getInventory = async (ownerId, query) => {
 
 const addInventoryItem = async (ownerId, data) => {
   const restaurant = await getRestaurant(ownerId);
-  return InventoryItem.create({ ...data, restaurant: restaurant._id });
+  const invData = { ...data, restaurant: restaurant._id };
+  // Map 'unit' → 'unitOfMeasure' (model uses unitOfMeasure, UI sends unit)
+  if (!invData.unitOfMeasure && invData.unit) invData.unitOfMeasure = invData.unit;
+  // Default category if not provided
+  if (!invData.category) invData.category = 'Other';
+  return InventoryItem.create(invData);
 };
 
 const updateInventoryItem = async (ownerId, itemId, data) => {
@@ -175,7 +180,12 @@ const getBeverages = async (ownerId, query) => {
 
 const addBeverage = async (ownerId, data) => {
   const restaurant = await getRestaurant(ownerId);
-  return BeverageInventory.create({ ...data, restaurant: restaurant._id });
+  // Map beverageName → name (model uses 'name', UI sends 'beverageName')
+  const bevData = { ...data, restaurant: restaurant._id };
+  if (!bevData.name && bevData.beverageName) bevData.name = bevData.beverageName;
+  // Default category if not provided
+  if (!bevData.category) bevData.category = 'Other';
+  return BeverageInventory.create(bevData);
 };
 
 const adjustBeverageStock = async (ownerId, bevId, adjustmentType, quantity) => {
@@ -236,7 +246,11 @@ const getExpenses = async (ownerId, query) => {
 
 const createExpense = async (ownerId, data) => {
   const restaurant = await getRestaurant(ownerId);
-  return RestaurantExpense.create({ ...data, restaurant: restaurant._id, createdBy: ownerId });
+  // Support both 'title' and 'description' field names from frontend
+  const expenseData = { ...data, restaurant: restaurant._id, createdBy: ownerId };
+  if (!expenseData.title && expenseData.description) expenseData.title = expenseData.description;
+  if (!expenseData.title && expenseData.category) expenseData.title = expenseData.category;
+  return RestaurantExpense.create(expenseData);
 };
 
 const updateExpense = async (ownerId, expenseId, data) => {
@@ -259,7 +273,14 @@ const getMaintenanceIssues = async (ownerId, query) => {
 
 const createMaintenanceIssue = async (ownerId, data) => {
   const restaurant = await getRestaurant(ownerId);
-  return MaintenanceIssue.create({ ...data, restaurant: restaurant._id });
+  const issueData = { ...data, restaurant: restaurant._id };
+  // Map 'priority' from simple values to enum values used in model
+  if (issueData.priority === 'High') issueData.priority = 'High Priority';
+  else if (issueData.priority === 'Medium') issueData.priority = 'Medium Priority';
+  else if (issueData.priority === 'Low') issueData.priority = 'Low Priority';
+  // Use issue text as itemName if itemName not provided
+  if (!issueData.itemName && issueData.issue) issueData.itemName = issueData.issue.substring(0, 50);
+  return MaintenanceIssue.create(issueData);
 };
 
 const updateMaintenanceIssue = async (ownerId, issueId, data) => {
@@ -370,9 +391,29 @@ const getSalesClosing = async (ownerId, query) => {
 const submitSalesEntry = async (ownerId, data) => {
   const restaurant = await getRestaurant(ownerId);
   const dateOnly = new Date(data.date); dateOnly.setHours(0,0,0,0);
+
+  // Map frontend field names to model field names
+  const mapped = {
+    date: data.date,
+    restaurant: restaurant._id,
+    submittedBy: ownerId,
+    status: 'Verified',
+    inHouseSales: data.inHouseSales || data.cashSales || 0,
+    doordashSales: data.doordashSales || data.onlineSales || 0,
+    uberEatsSales: data.uberEatsSales || 0,
+    deliverooSales: data.deliverooSales || 0,
+    grubHubSales: data.grubHubSales || data.cardSales || 0,
+    justEatSales: data.justEatSales || 0,
+    instaCartSales: data.instaCartSales || 0,
+    ezeCaterSales: data.ezeCaterSales || 0,
+    cateringSales: data.cateringSales || 0,
+    otherSales: data.otherSales || 0,
+    notes: data.notes || '',
+  };
+
   const existing = await SalesClosing.findOne({ restaurant: restaurant._id, date: { $gte: dateOnly, $lt: new Date(dateOnly.getTime() + 86400000) } });
-  if (existing) { Object.assign(existing, data); existing.status = 'Verified'; await existing.save(); return existing; }
-  return SalesClosing.create({ ...data, restaurant: restaurant._id, submittedBy: ownerId, status: 'Verified' });
+  if (existing) { Object.assign(existing, mapped); existing.status = 'Verified'; await existing.save(); return existing; }
+  return SalesClosing.create(mapped);
 };
 
 const getMissingSalesDates = async (ownerId) => {

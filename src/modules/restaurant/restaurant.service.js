@@ -3,7 +3,7 @@ const paginate = require('../../utils/paginate');
 
 const createRestaurant = async (ownerId, data) => {
   const slug = data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '-' + Date.now();
-  // Auto-approve on creation so owner can use dashboard immediately
+  // Auto-approve on creation so restaurant appears in listings and owner can use dashboard
   const restaurant = await Restaurant.create({ ...data, owner: ownerId, slug, status: 'approved' });
   return restaurant;
 };

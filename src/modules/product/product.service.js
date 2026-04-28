@@ -1,9 +1,11 @@
+const mongoose = require('mongoose');
 const Product = require('./product.model');
 const paginate = require('../../utils/paginate');
 
 const createProduct = async (retailerId, data) => {
   const slug = data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '-' + Date.now();
-  const product = await Product.create({ ...data, retailer: retailerId, slug });
+  // Auto-approve on creation so product appears in marketplace immediately
+  const product = await Product.create({ ...data, retailer: retailerId, slug, status: 'approved', adminApproved: true });
   return product;
 };
 
@@ -66,15 +68,15 @@ const getRetailerDashboardStats = async (retailerId) => {
   const Order = require('../order/order.model');
   const [productStats, orderStats, revenueStats] = await Promise.all([
     Product.aggregate([
-      { $match: { retailer: require('mongoose').Types.ObjectId(retailerId) } },
+      { $match: { retailer: new mongoose.Types.ObjectId(retailerId) } },
       { $group: { _id: null, total: { $sum: 1 }, lowStock: { $sum: { $cond: [{ $eq: ['$stockStatus', 'Low Stock'] }, 1, 0] } } } },
     ]),
     Order.aggregate([
-      { $match: { retailer: require('mongoose').Types.ObjectId(retailerId) } },
+      { $match: { retailer: new mongoose.Types.ObjectId(retailerId) } },
       { $group: { _id: '$status', count: { $sum: 1 }, revenue: { $sum: '$total' } } },
     ]),
     Order.aggregate([
-      { $match: { retailer: require('mongoose').Types.ObjectId(retailerId), status: 'delivered' } },
+      { $match: { retailer: new mongoose.Types.ObjectId(retailerId), status: 'delivered' } },
       { $group: { _id: null, totalRevenue: { $sum: '$total' } } },
     ]),
   ]);

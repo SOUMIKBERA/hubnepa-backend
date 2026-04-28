@@ -8,6 +8,7 @@ const staffSchema = new mongoose.Schema({
   phone: { type: String },
   role: { type: String, enum: ['Manager', 'Head Chef', 'Chef', 'Front Staff', 'Waitstaff', 'Delivery', 'Support Agent'], required: true },
   employmentType: { type: String, enum: ['Full-time', 'Part-time'], default: 'Full-time' },
+  shiftType: { type: String, enum: ['Morning', 'Afternoon', 'Evening', 'Night', 'Split'], default: 'Morning' },
   branch: { type: String, default: 'Downtown HQ' },
   loginCode: { type: String, length: 4 },
   status: { type: String, enum: ['Active', 'Training', 'Inactive', 'Terminated'], default: 'Active' },
@@ -24,6 +25,7 @@ const staffSchema = new mongoose.Schema({
     finance: { view: Boolean, create: Boolean, edit: Boolean, delete: Boolean },
   },
   avatar: { type: String, default: null },
+  terminationReason: { type: String, default: null },
 }, { timestamps: true });
 
 // ─── Shift Schema ────────────────────────────────────────────────────────────
@@ -70,7 +72,8 @@ const payrollSchema = new mongoose.Schema({
 // ─── Expense Schema ───────────────────────────────────────────────────────────
 const expenseSchema = new mongoose.Schema({
   restaurant: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant', required: true, index: true },
-  title: { type: String, required: true, trim: true },
+  title: { type: String, trim: true },
+  description: { type: String, trim: true },
   category: {
     type: String,
     enum: ['Food Supplies', 'Staff Salary', 'Kitchen Supplies', 'Cleaning Supplies', 'Maintenance', 'Utilities', 'Office Supplies', 'Catering Supplies', 'Beverage', 'Other', 'Rent', 'Laundry Supplies'],
@@ -89,7 +92,7 @@ const expenseSchema = new mongoose.Schema({
 // ─── Maintenance Issue Schema ──────────────────────────────────────────────────
 const maintenanceSchema = new mongoose.Schema({
   restaurant: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant', required: true },
-  itemName: { type: String, required: true },
+  itemName: { type: String, trim: true },
   priority: { type: String, enum: ['High Priority', 'Medium Priority', 'Low Priority'], default: 'Medium Priority' },
   issue: { type: String, required: true },
   status: { type: String, enum: ['Pending', 'In Progress', 'Resolved', 'Scheduled'], default: 'Pending' },

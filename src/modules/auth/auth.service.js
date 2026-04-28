@@ -52,6 +52,15 @@ const register = async (data) => {
     });
   }
 
+  // Welcome notification — so notifications list is never empty on first login
+  const Notification = require('../notification/notification.model');
+  await Notification.create({
+    user: user._id,
+    title: `Welcome to HubNepa, ${firstName}! 🎉`,
+    message: `Your account is ready. ${role === 'customer' ? 'Browse 500+ restaurants and fresh groceries.' : role === 'restaurant' ? 'Set up your restaurant profile and start receiving orders.' : role === 'retailer' ? 'Add your products to start selling on the marketplace.' : role === 'delivery' ? 'Complete your profile and go online to start earning.' : role === 'supplier' ? 'Add your wholesale catalog to reach premium buyers.' : 'Welcome to the admin panel.'}`,
+    type: 'system',
+  });
+
   const accessToken = generateAccessToken(user._id, user.role, user.email);
   const refreshToken = generateRefreshToken(user._id);
 
